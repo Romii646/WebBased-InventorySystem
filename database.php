@@ -2,10 +2,10 @@
  class Database {
     //Created by Aaron C. 09/19/2024 Finished 09/20/2024
     // will need database info to assign variables
-    private $dbName = "invmgmentv2";
-    private $user = "PHPtitan";
-    private $password = "PHPtitan admin5%";
-    private $host = "localhost";
+    private $dbName = "";
+    private $user = "";
+    private $password = "";
+    private $host = "";
     public $conn;
 
     public function getConnection(){
