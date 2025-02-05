@@ -1,2 +1,2 @@
 # WebBased-InventorySystem
-This project is a website page connecting to a MySQL Database using XAMP
+This project is a website connecting to a MySQL Database using XAMP
