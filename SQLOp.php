@@ -41,110 +41,42 @@ include $sSQLS;
  // Class insertOp is used to add rows into existing table
  Class insertOp extends SQLOp {
     // class variables
-    private $p_id;
-    private $partName;
-    private $cond;
-    private $expense;
-    private $local;
-    private $size;
-    private $type;
-    private $speed;
-    private $wattage;
-    private $modular;
-
+    private $keys = [];
+    
 // function to set class variables
-    function set_table_names ($p_id, $partName, $cond, $expense, $local, $size, $type, $speed, $wattage ,$modular){
-        $this -> p_id = $p_id;
-        $this -> partName = $partName;
-        $this -> cond = $cond;
-        $this -> expense = $expense;
-        $this -> local = $local;
-        $this -> $size = $size;
-        $this -> speed = $speed;
-        $this -> type = $type;
-        $this -> wattage = $wattage;
-        $this -> modular = $modular;    
+    function set_table_names (...$columnNames){
+        $count = 0;
+        foreach($columnNames as $columnName){
+         $this -> keys[$count++] = $columnName;
+        }
     }
 
     // function to insert new rows into a existing record
-    function add_query(string $id_value, string $name_value, string $condition_value, float $cost_value, string $location_value, string $monitor_size_value, string $motherboard_value,
-                        string $speed_value, string $type_value, string $wattage_value, string $modular_value, string $tableName){
+    function add_query($tableName,...$values){
         // function variables
         $SQLstring = "";
         $parList = [];
-        //SQLstring is the variable that contains the SQL command this variable will be given to any of the overload functions
-        if(!empty($monitor_size_value)){
-            $SQLstring = sql_inserting_com($this -> p_id, $this -> partName, $this -> size, $this -> cond, $this -> expense, $this -> local ,$tableName);
+
+        // SQLstring is the variable that contains the SQL generated command
+        //Function can be found in selectSQLString.php
+        $SQLstring = sql_inserting_com($tableName ,$this -> keys);//SQL insert command GENERATOR
+
+        // this for loop is used to bind the user's variables to the SQL command
         // parList is an array variable to connect sql place hold with user's variables
-            $parList = [':' . $this -> p_id => $id_value, 
-                        ':' . $this -> partName => $name_value,
-                        ':' . $this -> size => $monitor_size_value,
-                        ':' . $this -> cond => $condition_value, 
-                        ':' . $this -> expense => $cost_value, 
-                        ':' . $this -> local => $location_value
-                        ];
-        }
-        else if(!empty($motherboard_value)){
-            $SQLstring = sql_inserting_com($this -> p_id, $this -> partName, $this -> size, $this -> cond, $this -> expense, $this -> local ,$tableName);
-        // parList is an array variable to connect sql place hold with user's variables
-            $parList = [':' . $this -> p_id => $id_value, 
-                        ':' . $this -> partName => $name_value,
-                        ':' . $this -> size => $motherboard_value,
-                        ':' . $this -> cond => $condition_value, 
-                        ':' . $this -> expense => $cost_value, 
-                        ':' . $this -> local => $location_value
-                        ];
-        }
-        else if (!empty($speed_value)){
-            $SQLstring = sql_inserting_com($this -> p_id, $this -> partName, $this -> type, $this -> speed, $this -> cond, $this -> expense ,$this -> local, $tableName);
-            $parList = [':' . $this -> p_id => $id_value, 
-                        ':' . $this -> partName => $name_value,
-                        ':' . $this -> type => $type_value,
-                        ':' . $this -> speed => $speed_value,
-                        ':' . $this -> cond => $condition_value, 
-                        ':' . $this -> expense => $cost_value, 
-                        ':' . $this -> local => $location_value
-                        ];
-        }
-        elseif (!empty($type_value)) {
-            $SQLstring = sql_inserting_com($this -> p_id, $this -> partName, $this -> type, $this -> cond, $this -> expense, $this -> local ,$tableName);
-            $parList = [':' . $this -> p_id => $id_value, 
-                        ':' . $this -> partName => $name_value,
-                        ':' . $this -> type => $type_value,
-                        ':' . $this -> cond => $condition_value, 
-                        ':' . $this -> expense => $cost_value, 
-                        ':' . $this -> local => $location_value
-                       ];
-        }
-        else if (!empty($wattage_value)){
-            $SQLstring = sql_inserting_com($this -> p_id, $this -> partName, $this -> wattage, $this -> modular, $this -> cond, $this -> expense ,$this -> local, $tableName);
-            $parList = [':' . $this -> p_id => $id_value, 
-                        ':' . $this -> partName => $name_value,
-                        ':' . $this -> wattage => $wattage_value,
-                        ':' . $this -> modular => $modular_value,
-                        ':' . $this -> cond => $condition_value, 
-                        ':' . $this -> expense => $cost_value, 
-                        ':' . $this -> local => $location_value
-                       ];
-        }
-        else{
-            $SQLstring = sql_inserting_com($this -> p_id, $this -> partName, $this -> cond, $this -> expense, $this -> local, $tableName);
-            $parList = [':' . $this -> p_id => $id_value, 
-                        ':' . $this -> partName => $name_value, 
-                        ':' . $this -> cond => $condition_value, 
-                        ':' . $this -> expense => $cost_value, 
-                        ':' . $this -> local => $location_value
-                        ];
+        for($i = 0; $i < count($this -> keys); $i++){
+           if(!empty($values[$i])){
+               $parList[":" . $this -> keys[$i]] = $values[$i];
+           }
         }
 
         // The variable statement is assigned the SQLstring with the prepare method for binding values
-        $statement = $this -> conn -> prepare(query: $SQLstring);
+        $statement = $this -> conn -> prepare($SQLstring);
 
-        if ($statement === false) {
+        if ($statement === false) {// error checking if the SQL statement was prepared correctly
             die("SQL statement preparation failed: " . print_r($this -> conn->errorInfo(), true));
         }
 
-        // the forloop binds user variable's as a reference and its value to statement variable
+        // the for loop binds user variable's as a reference and its value to statement variable
         foreach($parList as $para => $value){
             $statement -> bindValue($para, $value);
         }
@@ -153,13 +85,9 @@ include $sSQLS;
         if (!$statement) {
             echo "Statement preparation failed.<br>";
             print_r($this -> conn->errorInfo());
-        } 
-        /* else {
-           echo "Statement preparation failed.<br>";
-           print_r($this -> conn->errorInfo());
-        } */
-        
+        }  
         // this if else statement executes the SQL command and tells you if it was successful or not.
+     
         try{
            if($statement -> execute()){
               //echo "Record inserted successfully.";
@@ -167,10 +95,10 @@ include $sSQLS;
             } 
            else{
               echo "Record insert not successful.";
-            }
+           }
         }
         catch(PDOException $e){
-            echo "Excution failed: " . $e -> getMessage();
+            echo "Execution failed: " . $e -> getMessage();
         }
     }
  }
@@ -270,7 +198,8 @@ class deleteOp extends SQLOp {// delete rows
     public function set_table_delete($tableName, $deleteValue1){// set user variables to delete row
         // deleteValue1 is the primary ID to tables
         include 'wLInventory.php';
-        $this -> SQLstring = "DELETE FROM $tableName WHERE $wordList[0] = :deleteValue1";
+        $primaryIdName = find_ID($tableName);
+        $this -> SQLstring = "DELETE FROM $tableName WHERE $primaryIdName = :deleteValue1";
         $this -> statement = $this -> conn -> prepare($this -> SQLstring);
         if($this -> statement === false){
             die("SQL statement preparation failed: " . print_r($this -> conn-> errorInfo(), true));
@@ -291,6 +220,11 @@ class deleteOp extends SQLOp {// delete rows
 }// end of class deleteOp
 
 class pcSetUp extends SQLOp{
+    /**
+     * Adds a row to the pcsetups table.
+     * 
+     * @param mixed ...$values Values to be inserted into the table.
+     */
     public function add_row(...$values){
         // start of function statements
         //$bindValues = [$p_ID_value, $mobo_ID_value, $gpu_ID_Value, $ram_ID_value, $psu_ID_value, $monitor_ID_value, $acc_ID_value, $kb_ID_value,
@@ -299,8 +233,8 @@ class pcSetUp extends SQLOp{
            $this -> statement = $this -> conn -> prepare("INSERT INTO pcsetups (pc_id, mobo_id, gpu_id, ram_id, psu_id, monitor_id, acc_id, kb_id, mouse_id, tableLocation, PCcondition)
             VALUES (:val1, :val2, :val3, :val4, :val5, :val6, :val7, :val8, :val9, :val10, :val11)");
 
-           for($i = 1; $i -1 <= count($values); $i++){
-             $this -> statement -> bindParam("val$i",$values[$i - 1]);
+           for($i = 1; $i <= count($values); $i++){
+             $this -> statement -> bindValue(":val$i",$values[$i - 1]);
            }
 
            if($this -> statement){
@@ -312,11 +246,16 @@ class pcSetUp extends SQLOp{
            }
 
            // executing pcsetup statement for execution to the database
-           if($this -> statement -> execute()){
-            echo "Record inserted successfully.";
+           try{
+              if($this -> statement -> execute()){
+                 echo "Record inserted successfully.";
+              }
+              else{
+                 echo "Insertion not successful.";
+              }
            }
-           else{
-            echo "Insertion not successful.";
+           catch(PDOException $e){
+              echo "error: ". $e -> getMessage();
            }
        }
        catch(PDOException $e){
