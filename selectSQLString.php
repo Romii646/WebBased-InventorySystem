@@ -1,6 +1,4 @@
-<?php // overloaded functions for sql insert query
-// Created by Aaron C. 10/20/2024 Finished 02/06/2025
-
+<?php 
 /**
  * Generates an SQL INSERT statement string.
  *
@@ -37,7 +35,7 @@
            $sqlString .= ":$SQLvalue)";
        }
     }
-    return $sqlString; //SQL dynamic GENERATED statements
+    return $sqlString;
 }
 
     /**
@@ -50,30 +48,19 @@
    function update_string($tableName, $tableColumnName){
     //require 'wLInventory.php';
     $count = count($tableColumnName);
-    $primaryIDName = find_ID($tableName);
-    //start of switch selection on size of update statement
-    switch($count){
-        case 1:
-            return "UPDATE $tableName SET `$tableColumnName[0]` = :columnValue1 WHERE $primaryIDName = :pValue";
-        case 2:
-            return "UPDATE $tableName SET `$tableColumnName[0]` = :columnValue1, `$tableColumnName[1]` = :columnValue2 WHERE $primaryIDName = :pValue";
-        case 3:
-            return "UPDATE $tableName SET `$tableColumnName[0]` = :columnValue1, `$tableColumnName[1]` = :columnValue2, `$tableColumnName[2]` = :columnValue3
-                    WHERE $primaryIDName = :pValue";
-        case 4: 
-            return "UPDATE $tableName SET `$tableColumnName[0]` = :columnValue1, `$tableColumnName[1]` = :columnValue2, `$tableColumnName[2]` = :columnValue3,
-                    `$tableColumnName[3]` = :columnValue4 WHERE $primaryIDName = :pValue";
-        case 5:
-            return "UPDATE $tableName SET `$tableColumnName[0]` = :columnValue1, `$tableColumnName[1]` = :columnValue2, `$tableColumnName[2]` = :columnValue3,
-                    `$tableColumnName[3]` = :columnValue4, `$tableColumnName[4]` = :columnValue5 WHERE $primaryIDName = :pValue";
-        case 6: 
-            return "UPDATE $tableName SET `$tableColumnName[0]` = :columnValue1, `$tableColumnName[1]` = :columnValue2, `$tableColumnName[2]` = :columnValue3,
-                    `$tableColumnName[3]` = :columnValue4, `$tableColumnName[4]` = :columnValue5, `$tableColumnName[5]` = :columnValue6 WHERE $primaryIDName = :pValue";
-        case 7:
-            return "UPDATE $tableName SET `$tableColumnName[0]` = :columnValue1, `$tableColumnName[1]` = :columnValue2, `$tableColumnName[2]` = :columnValue3,
-                    `$tableColumnName[3]` = :columnValue4, `$tableColumnName[4]` = :columnValue5, `$tableColumnName[5]` = :columnValue6,
-                    `$tableColumnName[6]` = :columnValue7 WHERE $primaryIDName = :pValue";
-        default:
-            return "invalid number of columns";
-    }// end of switch stemntation needed
+    $primaryIDName = find_ID($tableName);// to find the primary ID name for the primary key column
+    $sqlString = "UPDATE $tableName SET `$tableColumnName[0]` =";
+    for($i = 1; $i <= $count; $i++){
+        if($count == 1){
+            $sqlString .= " :columnValue1 WHERE $primaryIDName = :pValue";
+        }
+        else if($i == $count){
+            $sqlString .= " :columnValue$i WHERE $primaryIDName = :pValue";
+        }
+        else{
+            $sqlString .= " :columnValue$i, `$tableColumnName[$i]` =";
+        }
+    
+    }
+    return $sqlString;
 }
