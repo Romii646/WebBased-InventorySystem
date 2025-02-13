@@ -7,11 +7,6 @@
  * @return string The generated SQL INSERT statement.
  */
 
-
-
- /*  function getColumnName($tableName, $conn){
-    return $columnNames;
-  } */
    function sql_inserting_com($tableName, $SQLValues){
     // declared function variables
     $arraySize = count($SQLValues);
