@@ -8,6 +8,7 @@
 </head>
 <body>
 <?php
+// Created by Aaron C. 10/08/2024
 require 'wLInventory.php';
 require $db;
 include $sSQLS;
@@ -86,8 +87,11 @@ include $sSQLS;
             print_r($this -> conn->errorInfo());
         }  
         // this if else statement executes the SQL command and tells you if it was successful or not.
-     
-        try{
+         return $statement;
+        }
+        
+        function execute_query($statement){
+         try{
            if($statement -> execute()){
               //echo "Record inserted successfully.";
               $this -> database -> closeDB();
