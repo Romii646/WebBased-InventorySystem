@@ -42,9 +42,6 @@
                     $count++;
                 }
             }
-            echo "Column values: ";
-            print_r($columnValues);
-            print_r($columnNames);
             $table_name = validate_input($_POST['tableSelect'], "Table name");
             // End of assigning variable to POST values
             if($errorCount == 0) {
