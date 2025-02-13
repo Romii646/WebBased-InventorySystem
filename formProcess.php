@@ -10,8 +10,8 @@
     // Start of form processing for keyboard page
     // Variable list and require list
     require 'wLInventory.php';
-    require $sOP;
-    require $errorFunctions;
+    require $SQLOperationFile;
+    require $errorFunctionsFile;
 
     // Start of main program
     // Insert form
@@ -23,7 +23,6 @@
             $columnNames = [];
             $count = 0;
             // Start of assigning variables to POST values
-
             foreach($_POST as $post => $values){
                 if($post != "form" &&  $post != "tableSelect" && !empty($values)){
                     $columnValues[$count] = validate_input($values, $post);
@@ -43,16 +42,19 @@
                     $count++;
                 }
             }
+            echo "Column values: ";
+            print_r($columnValues);
+            print_r($columnNames);
             $table_name = validate_input($_POST['tableSelect'], "Table name");
             // End of assigning variable to POST values
             if($errorCount == 0) {
                 $idName = find_ID($table_name);//goes to wLInventory.php
                 $insertOP -> connect();
                 $insertOP -> set_table_names($idName, ...$columnNames);// goes to SQLOp.php
-                $insertOP -> add_query($table_name, ...$columnValues);// goes to SQLOp.php
-                $insertOP -> DB_close();
-                header("Location: inventoryForm.html");
-                exit();
+                $statement = $insertOP -> add_query($table_name, ...$columnValues);// goes to SQLOp.php
+                $insertOP -> execute_query($statement);// goes to SQLOp.php
+                //header("Location: inventoryForm.html");
+               // exit();
             }
             else{
                 echo "No form data received";
@@ -85,11 +87,13 @@
             // Local variables
             $updateOp = new updateOp(); // Class object for updating data
             $tableNameValues =[];
+
+            // grabbing the table name
             $table_name = validate_input($_POST['tableUpdate'], "update table row");
 
-            try{
+            try{// grabbing the primary ID value
                 if(!empty($_POST['pValue'])){
-                    $p_id_value = validate_input($_POST['pValue'],"getting p_id value for $table_name");
+                    $p_id_value = validate_input($_POST['pValue'],"Need p_id value for $table_name");
                 }
                 else{
                     throw new Exception ("Need a Primary ID to update a row on a table.");
@@ -98,46 +102,13 @@
             catch(Exception $e){
                 echo "Error:" . $e -> getMessage();
             }
-
-            if(!empty($_POST['nValue'])){
-                $tableNameValues['name'] = validate_input($_POST['nValue'], "updating table $table_name with current name value");
+            
+            foreach($_POST as $post => $value){
+                if($post != "form" && $post != "tableUpdate" && $post != "pValue" && !empty($value)){
+                    $tableNameValues[$post] = validate_input($value, $post);
+                }
             }
-
-            if(!empty($_POST['conditionValue'])){
-                $tableNameValues['condition'] = validate_input($_POST['conditionValue'], "updating condition attribute for table: $table_name");
-            }
-
-            if(!empty($_POST['costValue'])){
-                $tableNameValues['cost'] = validate_input($_POST['costValue'], "updating cost attribute on table: $table_name");
-            }
-
-            if(!empty($_POST['locationValue'])){
-                $tableNameValues['location'] = validate_input($_POST['locationValue'], "updating location value in table $table_name"); 
-            }
-
-            if(!empty($_POST['monitorsSizeValue'])){
-                $tableNameValues['size'] = validate_input($_POST['monitorsSizeValue'], "updating size value in table $table_name");
-            }
-
-            if(!empty($_POST['motherboardSizeValue'])){
-                $tableNameValues['size'] = validate_input($_POST['motherboardSizeValue'], "updating size value in table $table_name");
-            }
-
-            if(!empty($_POST['typeValue'])){
-                $tableNameValues['type'] = validate_input($_POST['typeValue'], "Updating type Value for table: $table_name");
-            }
-
-            if(!empty($_POST['speedValue'])){
-                $tableNameValues['speed'] = validate_input($_POST['speedValue'], "updating speed value for table: $table_name");
-            }
-
-            if(!empty($_POST['wattValue'])){
-                $tableNameValues['wattage'] = validate_input($_POST['wattValue'], "updating wattage value for table: $table_name");
-            }
-
-            if(!empty($_POST['modValue'])){
-                $tableNameValues['modular'] = validate_input($_POST['modValue'], "updating modular value for table: $table_name");
-            }
+        
             if($errorCount == 0) {
                 $updateOp -> connect();
                 if(!empty($tableNameValues)){
@@ -149,7 +120,9 @@
                      * @param int $p_id_value Primary ID value.
                      */
                     $updateOp -> set_table_update($table_name, $tableNameValues, $p_id_value);}
-                else{echo "No values to update";}
+                else{
+                    echo "No values to update";
+                }
                 $updateOp -> update_table();
                 $updateOp -> DB_close();
             }
