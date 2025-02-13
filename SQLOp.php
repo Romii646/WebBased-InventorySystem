@@ -8,7 +8,6 @@
 </head>
 <body>
 <?php
-// Created by Aaron C. 10/08/2024
 require 'wLInventory.php';
 require $db;
 include $sSQLS;
