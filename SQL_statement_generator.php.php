@@ -1,4 +1,6 @@
-<?php 
+<?php // overloaded functions for sql insert query
+// Created by Aaron C. 10/20/2024 Finished 02/06/2025
+
 /**
  * Generates an SQL INSERT statement string.
  *
@@ -7,6 +9,11 @@
  * @return string The generated SQL INSERT statement.
  */
 
+
+
+ /*  function getColumnName($tableName, $conn){
+    return $columnNames;
+  } */
    function sql_inserting_com($tableName, $SQLValues){
     // declared function variables
     $arraySize = count($SQLValues);
