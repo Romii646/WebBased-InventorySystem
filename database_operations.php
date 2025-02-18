@@ -1,17 +1,14 @@
-<!DOCTYPE html>
-<html lang = "en">
-<head>
-    <meta charset = "UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="formStyle.css"> 
-    <title>Keyboard page</title>
-</head>
-<body>
 <?php
-// Created by Aaron C. 10/08/2024
+ini_set('display_errors', 1); 
+ini_set('display_startup_errors', 1); 
+error_reporting(E_ALL);
+ini_set('log_errors', 1);
+ini_set('error_log', 'set_to_you_path/database_operations_error_log.log'); // Update this path to a writable location
+
 require 'wLInventory.php';
-require $db;
-include $sSQLS;
+require $databaseFile;
+include $SQLGeneratorFile;
+
  abstract Class SQLOp {
     // super class variables
    protected $statement;
@@ -58,7 +55,7 @@ include $sSQLS;
         $parList = [];
 
         // SQLstring is the variable that contains the SQL generated command
-        //Function can be found in selectSQLString.php
+        //Function can be found in SQL_statement_generator.php
         $SQLstring = sql_inserting_com($tableName ,$this -> keys);//SQL insert command GENERATOR
 
         // this for loop is used to bind the user's variables to the SQL command
@@ -90,6 +87,7 @@ include $sSQLS;
          return $statement;
         }
         
+        // function to execute the SQL command
         function execute_query($statement){
          try{
            if($statement -> execute()){
@@ -241,11 +239,10 @@ class pcSetUp extends SQLOp{
            }
 
            if($this -> statement){
-            echo "Statement prepared successfully <br>";
+            //echo "Statement prepared successfully <br>";
            }
            else {
-            echo "Statement preparation failed.<br>";
-            print_r($this -> conn->errorInfo());
+            error_log("Statement preparation failed." . $this -> conn->errorInfo());
            }
 
            // executing pcsetup statement for execution to the database
@@ -258,7 +255,7 @@ class pcSetUp extends SQLOp{
               }
            }
            catch(PDOException $e){
-              echo "error: ". $e -> getMessage();
+            error_log("Statement preparation failed." . $e -> getMessage());
            }
        }
        catch(PDOException $e){
@@ -331,5 +328,3 @@ class pcSetUp extends SQLOp{
     }//end of remove_row function
 }// end of pcSetUp class
 ?>
-</body>
-</html>
