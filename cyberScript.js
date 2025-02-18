@@ -42,7 +42,7 @@ function fetchTable() {
     fetch('pcSetUpProcess.php?action=view')
         .then(response => {
             console.log('Response Status:', response.status); // Log the HTTP status
-            return response.json();
+            return response.json(); // Read the response as text
         })
         .then(data => {
             if (data.message) {
@@ -71,59 +71,69 @@ function fetchTable() {
         });
 }
 
-function viewTable() {
-    document.addEventListener('DOMContentLoaded', fetchTable);
-}
-
-viewTable(); //loads method automatically when the page loads.
+document.addEventListener('DOMContentLoaded', function() {
+    // Fetch and display the table data as soon as the page loads.
+    fetchTable();
+    
+    // Add an event listener to the form to handle form submissions.
+    document.getElementById('Main-form').addEventListener("submit", queryTable);
+});
 
 // function add is used to add new entries to the pcSetUP table and update to table
-function addTable(){
-    document.getElementById('Form').addEventListener("submit", function(event){
-       event.preventDefault();
-       var nameValue = event.submitter.name;
-       const pc_id = document.getElementById('pc_id').value;
-       const mobo_id = document.getElementById('mobo_id').value;
-       const gpu_id = document.getElementById('gpu_id').value;
-       const ram_id = document.getElementById('ram_id').value;
-       const psu_id = document.getElementById('psu_id').value;
-       const monitor_id = document.getElementById('monitor_id').value;
-       const acc_id = document.getElementById('acc_id').value;
-       const kb_id = document.getElementById('kb_id').value;
-       const mouse_id = document.getElementById('mouse_id').value;
-       const tableLoc = document.getElementById('table_location').value;
-       const PCcondition = document.getElementById('PCcondition').value;
+function queryTable(event){
+    event.preventDefault();
+    var nameValue = event.submitter.name;
+    const pc_id = document.getElementById('pc_id').value;
+    const mobo_id = document.getElementById('mobo_id').value;
+    const gpu_id = document.getElementById('gpu_id').value;
+    const ram_id = document.getElementById('ram_id').value;
+    const psu_id = document.getElementById('psu_id').value;
+    const monitor_id = document.getElementById('monitor_id').value;
+    const acc_id = document.getElementById('acc_id').value;
+    const kb_id = document.getElementById('kb_id').value;
+    const mouse_id = document.getElementById('mouse_id').value;
+    const tableLoc = document.getElementById('tableLocation').value;
+    const PCcondition = document.getElementById('PCcondition').value;
 
-       const fieldValueArray = {
+    const fieldValueArray = {
         'pc_id' : pc_id,
         'mobo_id' : mobo_id,
         'gpu_id' : gpu_id,
         'ram_id' : ram_id,
         'psu_id' : psu_id,
         'monitor_id' : monitor_id,
-        'acc_id' :acc_id,
+        'acc_id' : acc_id,
         'kb_id' : kb_id,
         'mouse_id' : mouse_id,
         'tableLocation' : tableLoc,
         'PCcondition' : PCcondition
-       };
+    };
 
-       if(nameValue === 'add'){
+    if(nameValue === 'add'){
         fetch('pcSetUpProcess.php?action=add', {
             method : 'POST',
             headers : {'content-type' : 'application/json' },
             body: JSON.stringify(fieldValueArray)
         })
-        .then(() =>{
-            fetchTable();
-            document.getElementById('...').innerHTML = "Add successful.";
-         })
+        .then(data => {
+            console.log('Response:', data);
+            if (data.error) {
+                console.error('Error: ', data.error);
+                document.getElementById('error').innerHTML = data.error;
+            } else {
+                fetchTable();
+                document.getElementById('success').innerHTML = "Add successful.";
+                document.getElementById('error').innerHTML = "";
+            }
+        })
         .catch(error =>{
+           // fetchTable();
             console.error('Error: ', error);
-            document.getElementById('...').innerHTML = "add operation failed."
-           });
-       }
-       else if(nameValue === 'update'){
+            document.getElementById('error').innerHTML = "Add operation failed.";
+        });
+    }
+}
+/*  else if(nameValue === 'update'){
         fetch('pcSetUpProcess.php?action=update', {
             method : 'POST',
             headers : {'content-type' : 'application/json'},
@@ -137,7 +147,7 @@ function addTable(){
             console.error('Error: ', error);
             document.getElementById('...').innerHTML = "Update failed.";
         })
-       }
+       } */
 
        /* fetch('pcSetUPProcess.php?action=add', {
         method : 'POST',
@@ -154,54 +164,8 @@ function addTable(){
         console.error('Error: ', error);
         document.getElementById('...').innerHTML = "add operation failed."
        }) */
-    });
-}
-
-// function used to update table
-/* function updateRow(){
-    document.getElementById('...').addEventListener("submit", function(event){
-        event.preventDefault();
-        const pc_id = document.getElementById('pc_id').value;
-        const mobo_id = document.getElementById('mobo_id').value;
-        const gpu_id = document.getElementById('gpu_id').value;
-        const ram_id = document.getElementById('ram_id').value;
-        const psu_id = document.getElementById('psu_id').value;
-        const monitor_id = document.getElementById('monitor_id').value;
-        const acc_id = document.getElementById('acc_id').value;
-        const kb_id = document.getElementById('kb_id').value;
-        const mouse_id = document.getElementById('mouse_id').value;
-        const PCcondition = document.getElementById('PCcpndition').value;
-
-        const fieldValueArray = {
-            'pc_id' : pc_id,
-            'mobo_pc' : mobo_id,
-            'gpu_id' : gpu_id,
-            'ram_id' : ram_id,
-            'psu_id' : psu_id,
-            'monitor_id' : monitor_id,
-            'acc_id' :acc_id,
-            'kb_id' : kb_id,
-            'mouse_id' : mouse_id,
-            'PCcondition' : PCcondition
-           };
-
-        fetch('pcSetUPProcess.php?action=update', {
-            method : 'POST',
-            headers : {
-                'content-type' : 'application/json'
-            },
-            body : JSON.stringify(fieldValueArray) 
-        })
-        .then(() =>{
-            fetchTable();
-            document.getElementById('...').innerHTML = "Update successful.";
-        })
-        .catch(error => {
-            console.error('Error: ', error);
-            document.getElementById('...').innerHTML = "Update failed."
-        })
-    })
-} */
+   // });
+//}
 
 // function to delete row from the pc set up table
 function deleteRow(){
