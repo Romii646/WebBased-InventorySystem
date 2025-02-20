@@ -81,8 +81,5 @@ Includes external file listings and utility functions such as finding primary ke
 - Errors are logged to `php-error.log` and `database_operations_error_log.log`.
 - Ensure these files are writable by the web server.
 
-## License
-This project is licensed under the MIT License.
-
 ## Author
 Created by Aaron C.
