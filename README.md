@@ -7,6 +7,7 @@ The Cyber Lab Inventory System is a web-based application designed to manage and
 ```
 /c:/xampp/htdocs/inventory/
 ├── cyberScript.js
+├── database.php
 ├── database_operations.php
 ├── formProcess.php
 ├── formStyle.css
@@ -34,7 +35,7 @@ The Cyber Lab Inventory System is a web-based application designed to manage and
    - Import the SQL schema to create the necessary tables.
 
 5. **Configure Database Connection:**
-   - Update the database connection details in `wLInventory.php`.
+   - Update the database connection details in `database.php`.
 
 6. **Set Writable Permissions:**
    - Ensure the error log paths in `pcSetUpProcess.php` and `database_operations.php` are writable.
@@ -57,6 +58,9 @@ The Cyber Lab Inventory System is a web-based application designed to manage and
 
 ### `pcSetUpProcess.php`
 Handles the backend processing for viewing, adding, updating, and deleting PC setup records.
+
+### `database.php`
+Manages the database connection and provides methods to connect and close the database.
 
 ### `database_operations.php`
 Contains classes for database operations such as insert, update, delete, and query.
@@ -82,5 +86,3 @@ This project is licensed under the MIT License.
 
 ## Author
 Created by Aaron C.
-```
-
