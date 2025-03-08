@@ -3,9 +3,9 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1); 
 error_reporting(E_ALL);
 ini_set('log_errors', 1);
-ini_set('error_log', 'set_to_you_path/database_operations_error_log.log'); // Update this path to a writable location
+ini_set('error_log', ...); // Update this path to a writable location
 
-require 'wLInventory.php';
+require 'word_bank.php';
 require $databaseFile;
 include $SQLGeneratorFile;
 
@@ -91,7 +91,6 @@ include $SQLGeneratorFile;
         function execute_query($statement){
          try{
            if($statement -> execute()){
-              //echo "Record inserted successfully.";
               $this -> database -> closeDB();
             } 
            else{
@@ -99,7 +98,7 @@ include $SQLGeneratorFile;
            }
         }
         catch(PDOException $e){
-            echo "Execution failed: " . $e -> getMessage();
+            error_log("Execution not successfull for the add_query" . $e -> getMessage());
         }
     }
  }
@@ -127,14 +126,14 @@ Class queryOp extends SQLOp {
         // generate table headers dynamically
            echo "<tr>";
            foreach(array_keys($headStmts) as $colName){
-               echo "<th>" . htmlspecialchars($colName) . "</th>";
+               echo "<th>" . htmlspecialchars($colName ?? '') . "</th>";
            }
            echo "</tr>";
 
            echo "<tr>";
         // display first row associated with headers
            foreach($headStmts as $row_value){
-               echo "<td>" . htmlspecialchars($row_value) . "</td>"; 
+               echo "<td>" . htmlspecialchars($row_value ?? '') . "</td>"; 
            }
            echo "</tr>";
 
@@ -142,7 +141,7 @@ Class queryOp extends SQLOp {
            while($row = $this -> stmt -> fetch(PDO::FETCH_ASSOC)){
            echo "<tr>";
               foreach($row as $row_value){
-                  echo "<td>" . htmlspecialchars($row_value) . "</td>";
+                  echo "<td>" . htmlspecialchars($row_value ?? '') . "</td>";
               }
            echo "</tr>";
            }
@@ -160,7 +159,7 @@ class updateOp extends SQLOp{// updateOp class intended to update tables
     protected $statement;
 
     public function set_table_update($tableName, $columnValue, $pValue){
-        include 'wLInventory.php';
+        include 'word_bank.php';
         $columnArray = []; // array used to dynamically bind columnValues to column names
         $combineColumnArray =[];
         $tableColumnValue = array_values($columnValue);
@@ -184,13 +183,11 @@ class updateOp extends SQLOp{// updateOp class intended to update tables
     public function update_table() {
         try{
             if($this -> statement -> execute()){
-                echo "Update record successfully";
                 $this -> database -> closeDB();
             }
         }
         catch(PDOException $e){
-            echo "Execution not successful " . $e -> getMessage();
-
+            error_log("Execution not successful " . $e -> getMessage());
         }
     }
 }// end of class updateOp
@@ -198,7 +195,7 @@ class updateOp extends SQLOp{// updateOp class intended to update tables
 class deleteOp extends SQLOp {// delete rows
     public function set_table_delete($tableName, $deleteValue1){// set user variables to delete row
         // deleteValue1 is the primary ID to tables
-        include 'wLInventory.php';
+        include 'word_bank.php';
         $primaryIdName = find_ID($tableName);
         $this -> SQLstring = "DELETE FROM $tableName WHERE $primaryIdName = :deleteValue1";
         $this -> statement = $this -> conn -> prepare($this -> SQLstring);
@@ -210,9 +207,7 @@ class deleteOp extends SQLOp {// delete rows
 
     public function delete_row(){// function used to delete a row from a table.
         try{
-            if($this -> statement -> execute()){
-                echo "Row successfully deleted";
-            }
+            $this -> statement -> execute();
         }
         catch(PDOException $e){
             echo "Deletion not successful " . $e -> getMessage();
@@ -247,19 +242,14 @@ class pcSetUp extends SQLOp{
 
            // executing pcsetup statement for execution to the database
            try{
-              if($this -> statement -> execute()){
-                 echo "Record inserted successfully.";
-              }
-              else{
-                 echo "Insertion not successful.";
-              }
+              $this -> statement -> execute();
            }
            catch(PDOException $e){
-            error_log("Statement preparation failed." . $e -> getMessage());
+            error_log("Insertion not successful " . $e -> getMessage());
            }
        }
        catch(PDOException $e){
-        echo "error: ". $e -> getMessage();
+        error_log("Execution not successful for add_row " . $e -> getMessage());
        }
     }// end of add_row function
 
@@ -275,55 +265,55 @@ class pcSetUp extends SQLOp{
             }
         }
         catch (PDOException $e) {
-            return ['error' => $e->getMessage()];
+            error_log("Execution not successful for view_table" . $e -> getMessage());
         }
     }// end of view_table function
 
     public function update_row($columnNameValue, $pValue){
         $tableName = "pcsetups";
-        $columnArray = [];
         $tableColumnName = array_keys($columnNameValue);
         $tableColumnValue = array_values($columnNameValue);
         $updateStmnt = update_string($tableName, $tableColumnName);
         $updateSqlStmnt = $this -> conn -> prepare($updateStmnt);
+
         if($updateSqlStmnt === false){
             die("SQL statement preparation failed: " . print_r($this -> conn-> errorInfo(), true));
         }
-        for($i = 1; $i <= count($tableColumnName); $i++){
-            $columnArray [] = ":columnValue$i";
-        };
-        $combineColumnArray = array_combine($columnArray, $tableColumnValue);
-        foreach ($combineColumnArray as $colName => $colValue){
-            $updateSqlStmnt -> bindParam($colName, $colValue);
+    try{
+        $this->conn->beginTransaction();
+
+       for ($i = 1; $i <= count($tableColumnName); $i++) {
+           $paramName = ":columnValue$i";
+           $updateSqlStmnt->bindParam($paramName, $tableColumnValue[$i - 1]);
         }
+
         $updateSqlStmnt -> bindParam('pValue', $pValue);
+        
+        //the php method execute is used to execute a sql command and is called on the PDOStatement object and returns a result
+        $updateSqlStmnt -> execute();
 
-        try{
-            if($updateSqlStmnt -> execute()){
-                echo "Update record successfully";
-            }
+        $this -> conn -> commit();
         }
-        catch(PDOException $e){
-            echo "Execution not successful " . $e -> getMessage();
-
-        }
+    catch(PDOException $e){
+        error_log("Execution not successful " . $e -> getMessage());
+    }
     }// end of update_row function
 
-    public function delete_row($deleteValue){
-        $this -> statement = $this -> conn ->prepare("DELETE FROM pcsetups WHERE pc_id = id_value");
+    public function delete_row($deleteValue){// function used to delete a row from pcsetups table
+        
+        $this -> statement = $this -> conn ->prepare("DELETE FROM pcsetups WHERE pc_id = :id_value");
 
         if($this -> statement === false){
             die("SQL statement preparation failed: " . print_r($this -> conn-> errorInfo(), true));
         }
+
         $this -> statement -> bindParam(':id_value', $deleteValue);
 
         try{
-            if($this -> statement -> execute()){
-                echo "Row successfully deleted";
-            }
+            $this -> statement -> execute();   
         }
         catch(PDOException $e){
-            echo "Deletion not successful " . $e -> getMessage();
+            error_log("Deletion not successful " . $e -> getMessage());
         }
     }//end of remove_row function
 }// end of pcSetUp class
