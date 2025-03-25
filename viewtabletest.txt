@@ -1,0 +1,203 @@
+This script combines all the tables into a single view table.
+  at the end of the script, i'll show ways to query broken, in_use, or storaged components. I'll also leave a way to get a specific component list as well.
+
+Below is the raw sql for this table:
+------------------------
+
+  
+CREATE VIEW all_components AS
+SELECT
+    'Motherboard' AS component_type,
+    mobo_id AS component_id,
+    name,
+    condition,
+    status,
+    cost,
+    size,
+    NULL AS type, -- For RAM, Storage, Accessories
+    NULL AS speed, -- For RAM
+    NULL AS wattage, -- For PSU
+    NULL AS modular, -- For PSU
+    NULL AS platform -- For CPU
+FROM motherboards
+
+UNION ALL
+
+SELECT
+    'GPU' AS component_type,
+    gpu_id AS component_id,
+    name,
+    condition,
+    status,
+    cost,
+    NULL AS size,
+    NULL AS type,
+    NULL AS speed,
+    NULL AS wattage,
+    NULL AS modular,
+    NULL AS platform
+FROM gpu
+
+UNION ALL
+
+SELECT
+    'RAM' AS component_type,
+    ram_id AS component_id,
+    name,
+    condition,
+    status,
+    cost,
+    NULL AS size,
+    type,
+    speed,
+    NULL AS wattage,
+    NULL AS modular,
+    NULL AS platform
+FROM ram
+
+UNION ALL
+
+SELECT
+    'PSU' AS component_type,
+    psu_id AS component_id,
+    name,
+    condition,
+    status,
+    cost,
+    NULL AS size,
+    NULL AS type,
+    NULL AS speed,
+    wattage,
+    modular,
+    NULL AS platform
+FROM psu
+
+UNION ALL
+
+SELECT
+    'Monitor' AS component_type,
+    monitor_id AS component_id,
+    name,
+    condition,
+    status,
+    cost,
+    size,
+    NULL AS type,
+    NULL AS speed,
+    NULL AS wattage,
+    NULL AS modular,
+    NULL AS platform
+FROM monitor
+
+UNION ALL
+
+SELECT
+    'Accessory' AS component_type,
+    accesory_id AS component_id,
+    name,
+    condition,
+    status,
+    cost,
+    NULL AS size,
+    type,
+    NULL AS speed,
+    NULL AS wattage,
+    NULL AS modular,
+    NULL AS platform
+FROM accessories
+
+UNION ALL
+
+SELECT
+    'Keyboard' AS component_type,
+    keyboard_id AS component_id,
+    name,
+    condition,
+    status,
+    cost,
+    NULL AS size,
+    NULL AS type,
+    NULL AS speed,
+    NULL AS wattage,
+    NULL AS modular,
+    NULL AS platform
+FROM keyboard
+
+UNION ALL
+
+SELECT
+    'Mouse' AS component_type,
+    mouse_id AS component_id,
+    name,
+    condition,
+    status,
+    cost,
+    NULL AS size,
+    NULL AS type,
+    NULL AS speed,
+    NULL AS wattage,
+    NULL AS modular,
+    NULL AS platform
+FROM mouse
+
+UNION ALL
+
+SELECT
+    'Case' AS component_type,
+    case_id AS component_id,
+    name,
+    condition,
+    status,
+    cost,
+    NULL AS size,
+    NULL AS type,
+    NULL AS speed,
+    NULL AS wattage,
+    NULL AS modular,
+    NULL AS platform
+FROM pccase
+
+UNION ALL
+
+SELECT
+    'Storage' AS component_type,
+    storage_id AS component_id,
+    name,
+    condition,
+    status,
+    cost,
+    NULL AS size,
+    type,
+    NULL AS speed,
+    NULL AS wattage,
+    NULL AS modular,
+    NULL AS platform
+FROM storage
+
+UNION ALL
+
+SELECT
+    'CPU' AS component_type,
+    cpu_id AS component_id,
+    name,
+    condition,
+    status,
+    cost,
+    NULL AS size,
+    NULL AS type,
+    NULL AS speed,
+    NULL AS wattage,
+    NULL AS modular,
+    platform
+FROM cpu;
+
+  // to select and show the entire table, the sql is below.
+    SELECT * FROM all_components;
+  -------------------------------------
+To Query a broken, in use, or storaged component, use the below sql: 
+  //broken
+  SELECT * FROM all_components WHERE status = 'BROKEN';
+  // In use
+    SELECT * FROM all_components WHERE status = 'IN_USE';
+// storage
+    SELECT * FROM all_components WHERE status = 'STORAGE';
