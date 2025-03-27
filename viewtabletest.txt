@@ -201,3 +201,33 @@ To Query a broken, in use, or storaged component, use the below sql:
     SELECT * FROM all_components WHERE status = 'IN_USE';
 // storage
     SELECT * FROM all_components WHERE status = 'STORAGE';
+
+
+***********************************************************************************************************************************
+CREATE VIEW stored_components_storage AS
+SELECT 'Accessory' AS category, acc_id AS component_id, name, type, `condition`, cost, location AS status FROM accessories WHERE location = 'STORAGE'
+UNION ALL
+SELECT 'GPU' AS category, gpu_id AS component_id, name, NULL AS type, `condition`, cost, status FROM graphicscards WHERE status = 'STORAGE'
+UNION ALL
+SELECT 'Keyboard' AS category, kb_id AS component_id, name, NULL AS type, `condition`, cost, status FROM keyboards WHERE status = 'STORAGE'
+UNION ALL
+SELECT 'Mouse' AS category, mouse_id AS component_id, name, NULL AS type, `condition`, cost, location AS status FROM mice WHERE location = 'STORAGE'
+UNION ALL
+SELECT 'Monitor' AS category, monitor_id AS component_id, name, width AS type, `condition`, cost, status FROM monitors WHERE status = 'STORAGE'
+UNION ALL
+SELECT 'Motherboard' AS category, mobo_id AS component_id, name, size AS type, `condition`, cost, status FROM motherboards WHERE status = 'STORAGE'
+UNION ALL
+SELECT 'Power Supply' AS category, psu_id AS component_id, name, wattage AS type, `condition`, cost, status FROM powersupplies WHERE status = 'STORAGE'
+UNION ALL
+SELECT 'RAM' AS category, ram_id AS component_id, name, type, `condition`, cost, status FROM ramsticks WHERE status = 'STORAGE'
+UNION ALL
+SELECT 'TOTAL' AS category, NULL AS component_id, NULL AS name, NULL AS type, NULL AS `condition`, SUM(cost) AS cost, NULL AS status FROM (
+    SELECT cost FROM accessories WHERE location = 'STORAGE'
+    UNION ALL SELECT cost FROM graphicscards WHERE status = 'STORAGE'
+    UNION ALL SELECT cost FROM keyboards WHERE status = 'STORAGE'
+    UNION ALL SELECT cost FROM mice WHERE location = 'STORAGE'
+    UNION ALL SELECT cost FROM monitors WHERE status = 'STORAGE'
+    UNION ALL SELECT cost FROM motherboards WHERE status = 'STORAGE'
+    UNION ALL SELECT cost FROM powersupplies WHERE status = 'STORAGE'
+    UNION ALL SELECT cost FROM ramsticks WHERE status = 'STORAGE'
+) AS all_costs;
