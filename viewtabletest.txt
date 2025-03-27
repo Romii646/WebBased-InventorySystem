@@ -231,3 +231,31 @@ SELECT 'TOTAL' AS category, NULL AS component_id, NULL AS name, NULL AS type, NU
     UNION ALL SELECT cost FROM powersupplies WHERE status = 'STORAGE'
     UNION ALL SELECT cost FROM ramsticks WHERE status = 'STORAGE'
 ) AS all_costs;
+*************************************************************************************************************************************************************************
+CREATE VIEW component_totals AS
+SELECT 'Accessory' AS category, COUNT(*) AS total_count, SUM(cost) AS total_cost FROM accessories
+UNION ALL
+SELECT 'GPU' AS category, COUNT(*) AS total_count, SUM(cost) AS total_cost FROM graphicscards
+UNION ALL
+SELECT 'Keyboard' AS category, COUNT(*) AS total_count, SUM(cost) AS total_cost FROM keyboards
+UNION ALL
+SELECT 'Mouse' AS category, COUNT(*) AS total_count, SUM(cost) AS total_cost FROM mice
+UNION ALL
+SELECT 'Monitor' AS category, COUNT(*) AS total_count, SUM(cost) AS total_cost FROM monitors
+UNION ALL
+SELECT 'Motherboard' AS category, COUNT(*) AS total_count, SUM(cost) AS total_cost FROM motherboards
+UNION ALL
+SELECT 'Power Supply' AS category, COUNT(*) AS total_count, SUM(cost) AS total_cost FROM powersupplies
+UNION ALL
+SELECT 'RAM' AS category, COUNT(*) AS total_count, SUM(cost) AS total_cost FROM ramsticks
+UNION ALL
+SELECT 'TOTAL' AS category, SUM(total_count) AS total_count, SUM(total_cost) AS total_cost FROM (
+    SELECT COUNT(*) AS total_count, SUM(cost) AS total_cost FROM accessories
+    UNION ALL SELECT COUNT(*) AS total_count, SUM(cost) AS total_cost FROM graphicscards
+    UNION ALL SELECT COUNT(*) AS total_count, SUM(cost) AS total_cost FROM keyboards
+    UNION ALL SELECT COUNT(*) AS total_count, SUM(cost) AS total_cost FROM mice
+    UNION ALL SELECT COUNT(*) AS total_count, SUM(cost) AS total_cost FROM monitors
+    UNION ALL SELECT COUNT(*) AS total_count, SUM(cost) AS total_cost FROM motherboards
+    UNION ALL SELECT COUNT(*) AS total_count, SUM(cost) AS total_cost FROM powersupplies
+    UNION ALL SELECT COUNT(*) AS total_count, SUM(cost) AS total_cost FROM ramsticks
+) AS all_totals;
