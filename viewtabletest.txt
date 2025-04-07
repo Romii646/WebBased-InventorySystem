@@ -268,7 +268,7 @@ CREATE TABLE Storage_Slots (
 CREATE TABLE Storage_Components (
     Component_ID VARCHAR(50) PRIMARY KEY,        -- Unique identifier for components
     StorageSlot_ID VARCHAR(50),                 -- Foreign key referencing Storage_Slots (nullable)
-    Component_Type VARCHAR(50) NOT NULL,        -- Type of component (e.g., SSD, HDD)
+    Component_Type ENUM('SSD', 'HDD', 'RAM') NOT NULL, -- Component type with ENUM
     Component_Specs VARCHAR(255),               -- Detailed specs of the component
     FOREIGN KEY (StorageSlot_ID) REFERENCES Storage_Slots(StorageSlot_ID)
 );
