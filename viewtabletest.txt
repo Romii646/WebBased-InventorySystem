@@ -261,15 +261,18 @@ SELECT 'TOTAL' AS category, SUM(total_count) AS total_count, SUM(total_cost) AS 
 ) AS all_totals;
 **************************************************************************************************************************************************************************************
 Create the Storage_Slots table
-CREATE TABLE Storage_Slots (
-    StorageSlot_ID VARCHAR(50) PRIMARY KEY,  -- Unique identifier for the storage slot
-    Slot_Name VARCHAR(100)                   -- Name/description of the slot
+CREATE TABLE storage_slots (
+    Storage_slot_id VARCHAR(50) PRIMARY KEY,  -- Unique identifier for the storage slot
+    description VARCHAR(200)                   -- Name/description of the slot
 );
-CREATE TABLE Storage_Components (
-    Component_ID VARCHAR(50) PRIMARY KEY,        -- Unique identifier for components
-    StorageSlot_ID VARCHAR(50),                 -- Foreign key referencing Storage_Slots (nullable)
-    Component_Type ENUM('SSD', 'HDD', 'RAM') NOT NULL, -- Component type with ENUM
-    Component_Specs VARCHAR(255),               -- Detailed specs of the component
-    FOREIGN KEY (StorageSlot_ID) REFERENCES Storage_Slots(StorageSlot_ID)
+CREATE TABLE storage_components (
+    strorage_id VARCHAR(50) PRIMARY KEY,  
+    storage_slot_id VARCHAR(50),
+    type ENUM('SSD', 'HDD') NOT NULL,
+    `condition` ENUM('GOOD', 'BROKEN'),
+    cost MEDIUMINT,
+    `status` ENUM('IN_USE', 'STORAGE', 'DISPOSED'),
+    location VARCHAR(200),
+    FOREIGN KEY (storage_slot_id) REFERENCES storage_slots(storage_slot_id)
 );
 *************************************************************************************************************************************************************************************************
