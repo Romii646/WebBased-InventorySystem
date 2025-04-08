@@ -259,6 +259,126 @@ SELECT 'TOTAL' AS category, SUM(total_count) AS total_count, SUM(total_cost) AS 
     UNION ALL SELECT COUNT(*) AS total_count, SUM(cost) AS total_cost FROM powersupplies
     UNION ALL SELECT COUNT(*) AS total_count, SUM(cost) AS total_cost FROM ramsticks
 ) AS all_totals;
+
+**************************************************************************************************************************************************************************************
+CREATE VIEW disposed_parts AS
+SELECT 
+    CAST('Accessory' AS CHAR CHARACTER SET utf8mb4) AS category,
+    CAST(name AS CHAR CHARACTER SET utf8mb4) AS name,
+    CAST(type AS CHAR CHARACTER SET utf8mb4) AS type,
+    cost,
+    CAST(location AS CHAR CHARACTER SET utf8mb4) AS location
+FROM accessories
+WHERE location = 'DISPOSED'
+
+UNION ALL
+
+SELECT 
+    CAST('GPU' AS CHAR CHARACTER SET utf8mb4),
+    CAST(name AS CHAR CHARACTER SET utf8mb4),
+    NULL,
+    cost,
+    CAST(status AS CHAR CHARACTER SET utf8mb4)
+FROM graphicscards
+WHERE status = 'DISPOSED'
+
+UNION ALL
+
+SELECT 
+    CAST('Keyboard' AS CHAR CHARACTER SET utf8mb4),
+    CAST(name AS CHAR CHARACTER SET utf8mb4),
+    NULL,
+    cost,
+    CAST(status AS CHAR CHARACTER SET utf8mb4)
+FROM keyboards
+WHERE status = 'DISPOSED'
+
+UNION ALL
+
+SELECT 
+    CAST('Mouse' AS CHAR CHARACTER SET utf8mb4),
+    CAST(name AS CHAR CHARACTER SET utf8mb4),
+    NULL,
+    cost,
+    CAST(location AS CHAR CHARACTER SET utf8mb4)
+FROM mice
+WHERE location = 'DISPOSED'
+
+UNION ALL
+
+SELECT 
+    CAST('Monitor' AS CHAR CHARACTER SET utf8mb4),
+    CAST(name AS CHAR CHARACTER SET utf8mb4),
+    CAST(width AS CHAR CHARACTER SET utf8mb4),
+    cost,
+    CAST(status AS CHAR CHARACTER SET utf8mb4)
+FROM monitors
+WHERE status = 'DISPOSED'
+
+UNION ALL
+
+SELECT 
+    CAST('Motherboard' AS CHAR CHARACTER SET utf8mb4),
+    CAST(name AS CHAR CHARACTER SET utf8mb4),
+    CAST(size AS CHAR CHARACTER SET utf8mb4),
+    cost,
+    CAST(status AS CHAR CHARACTER SET utf8mb4)
+FROM motherboards
+WHERE status = 'DISPOSED'
+
+UNION ALL
+
+SELECT 
+    CAST('Power Supply' AS CHAR CHARACTER SET utf8mb4),
+    CAST(name AS CHAR CHARACTER SET utf8mb4),
+    CAST(wattage AS CHAR CHARACTER SET utf8mb4),
+    cost,
+    CAST(status AS CHAR CHARACTER SET utf8mb4)
+FROM powersupplies
+WHERE status = 'DISPOSED'
+
+UNION ALL
+
+SELECT 
+    CAST('RAM' AS CHAR CHARACTER SET utf8mb4),
+    CAST(name AS CHAR CHARACTER SET utf8mb4),
+    CAST(type AS CHAR CHARACTER SET utf8mb4),
+    cost,
+    CAST(status AS CHAR CHARACTER SET utf8mb4)
+FROM ramsticks
+WHERE status = 'DISPOSED'
+
+UNION ALL
+
+SELECT 
+    CAST('Storage' AS CHAR CHARACTER SET utf8mb4),
+    CAST(name AS CHAR CHARACTER SET utf8mb4),
+    CAST(type AS CHAR CHARACTER SET utf8mb4),
+    cost,
+    CAST(status AS CHAR CHARACTER SET utf8mb4)
+FROM storage_components
+WHERE status = 'DISPOSED'
+
+UNION ALL
+
+SELECT 
+    CAST('TOTAL' AS CHAR CHARACTER SET utf8mb4),
+    NULL,
+    NULL,
+    SUM(cost),
+    NULL
+FROM (
+    SELECT cost FROM accessories WHERE location = 'DISPOSED'
+    UNION ALL SELECT cost FROM graphicscards WHERE status = 'DISPOSED'
+    UNION ALL SELECT cost FROM keyboards WHERE status = 'DISPOSED'
+    UNION ALL SELECT cost FROM mice WHERE location = 'DISPOSED'
+    UNION ALL SELECT cost FROM monitors WHERE status = 'DISPOSED'
+    UNION ALL SELECT cost FROM motherboards WHERE status = 'DISPOSED'
+    UNION ALL SELECT cost FROM powersupplies WHERE status = 'DISPOSED'
+    UNION ALL SELECT cost FROM ramsticks WHERE status = 'DISPOSED'
+    UNION ALL SELECT cost FROM storage_components WHERE status = 'DISPOSED'
+) AS total_costs;
+
 **************************************************************************************************************************************************************************************
 Create the Storage_Slots table
 CREATE TABLE storage_slots (
