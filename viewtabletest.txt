@@ -267,9 +267,9 @@ SELECT
     CAST(name AS CHAR CHARACTER SET utf8mb4) AS name,
     CAST(type AS CHAR CHARACTER SET utf8mb4) AS type,
     cost,
-    CAST(location AS CHAR CHARACTER SET utf8mb4) AS location
+    CAST(status AS CHAR CHARACTER SET utf8mb4) AS location
 FROM accessories
-WHERE location = 'DISPOSED'
+WHERE status = 'DISPOSED'
 
 UNION ALL
 
@@ -300,9 +300,9 @@ SELECT
     CAST(name AS CHAR CHARACTER SET utf8mb4),
     NULL,
     cost,
-    CAST(location AS CHAR CHARACTER SET utf8mb4)
+    CAST(status AS CHAR CHARACTER SET utf8mb4)
 FROM mice
-WHERE location = 'DISPOSED'
+WHERE status = 'DISPOSED'
 
 UNION ALL
 
@@ -368,10 +368,10 @@ SELECT
     SUM(cost),
     NULL
 FROM (
-    SELECT cost FROM accessories WHERE location = 'DISPOSED'
+    SELECT cost FROM accessories WHERE status = 'DISPOSED'
     UNION ALL SELECT cost FROM graphicscards WHERE status = 'DISPOSED'
     UNION ALL SELECT cost FROM keyboards WHERE status = 'DISPOSED'
-    UNION ALL SELECT cost FROM mice WHERE location = 'DISPOSED'
+    UNION ALL SELECT cost FROM mice WHERE status = 'DISPOSED'
     UNION ALL SELECT cost FROM monitors WHERE status = 'DISPOSED'
     UNION ALL SELECT cost FROM motherboards WHERE status = 'DISPOSED'
     UNION ALL SELECT cost FROM powersupplies WHERE status = 'DISPOSED'
